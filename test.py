@@ -3,19 +3,16 @@ from tkinter import ttk
 import openai
 
 # OpenAI API key
-openai.api_key = 'xxx'
+openai.api_key = 'YOUR_API_KEY'
 
 def read_requirements(file_path):
     with open(file_path, 'r') as file:
         requirements = file.readlines()
     return [req.strip() for req in requirements]
 
-
 def gpt_evaluate_requirement(requirement):
-    client = openai(base_url="http://localhost:1234/v1", api_key="not-needed")
-
     prompt = f"Evaluate the following requirement based on the criteria:\n\nRequirement: {requirement}\n\nCriteria:\n1. Consistency\n2. Clarity\n3. Testability\n4. Measurability\n5. Uniqueness\n\nProvide a score between 1 and 10 for each criterion."
-    response = client.chat.completions.create(
+    response = openai.Completion.create(
         model="gpt-4o-mini",
         prompt=prompt,
         max_tokens=1500
