@@ -1,0 +1,4 @@
+REQ0: A and B are inputs, C is output, default output value is FALSE.
+REQ1: If B is greater than 10 trigger the output as TRUE.
+REQ2: If B is equal to 12 trigger the output as TRUE.
+REQ3: If sum of A and B (A+B) is more than 15, trigger the output as TRUE.
