@@ -1,9 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-import openai
+from openai import OpenAI
+import os
 
 # OpenAI API key
-openai.api_key = 'YOUR_API_KEY'
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key="sk-API-KEY",
+)
 
 def read_requirements(file_path):
     with open(file_path, 'r') as file:
@@ -12,10 +16,9 @@ def read_requirements(file_path):
 
 def gpt_evaluate_requirement(requirement):
     prompt = f"Evaluate the following requirement based on the criteria:\n\nRequirement: {requirement}\n\nCriteria:\n1. Consistency\n2. Clarity\n3. Testability\n4. Measurability\n5. Uniqueness\n\nProvide a score between 1 and 10 for each criterion."
-    response = openai.Completion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
-        prompt=prompt,
-        max_tokens=1500
+        messages=prompt,
     )
     scores_text = response.choices[0].text.strip().split("\n")
     scores = [int(score.split(":")[1].strip()) for score in scores_text]
