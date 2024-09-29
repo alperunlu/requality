@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 from openai import OpenAI
 import os
@@ -72,6 +73,15 @@ def create_gui(requirements_data):
 
 
 def main(input_path, output_path):
+    input_path = filedialog.askopenfilename(title="Select Requirements File", filetypes=[("Text Files", "*.txt")])
+    output_path = filedialog.asksaveasfilename(title="Save Evaluation Results As", filetypes=[("Text Files", "*.txt")])
+
+    if input_path and output_path:
+        requirements = read_requirements(input_path)
+        requirements_data = [(req.split(':')[0], gpt_evaluate_requirement(req)) for req in requirements]
+        write_evaluation_results(requirements_data, output_path)
+        create_gui(requirements_data)
+    
     requirements = read_requirements(input_path)
     requirements_data = [(req.split(':')[0], gpt_evaluate_requirement(req)) for req in requirements]
     write_evaluation_results(requirements_data, output_path)
