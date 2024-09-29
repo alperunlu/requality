@@ -6,7 +6,7 @@ import os
 
 # OpenAI API key
 client = OpenAI(
-    api_key="APIKEY",
+    api_key="KEY",
 )
 
 def read_requirements(file_path):
@@ -19,10 +19,12 @@ def gpt_evaluate_requirement(requirement):
    
     response = client.chat.completions.create(
         model="gpt-4",
+        temperature=0,
         messages=[
-          {"role": "system", "content": "You are an expert at evaluating software requirements."},
+          {"role": "system", "content": "You are an expert at evaluating software requirements. Use consistent criteria to evaluate the requirements objectively every time. The results should not vary between evaluations for the same requirement."},
           {"role": "user", "content": prompt},
         ]
+        
     )
 
     response_text = response.choices[0].message.content.strip()
@@ -53,22 +55,62 @@ def create_gui(requirements_data):
     root = tk.Tk()
     root.title("Requirement Evaluations")
 
-    headers = ["Requirement ID", "Consistency", "Clarity", "Testability", "Measurability", "Uniqueness"]
+    headers = ["Requirement ID", "Consistency", "Clarity", "Testability", "Measurability", "Uniqueness", "Overall"]
+    
+
     for i, header in enumerate(headers):
         label = tk.Label(root, text=header, font=('Helvetica', 10, 'bold'))
         label.grid(row=0, column=i, padx=10, pady=10, sticky="w")
 
+
     for row, (req_id, scores) in enumerate(requirements_data, start=1):
         print(f"Processing: {req_id} with scores {scores}")  # Debug
-        if scores:  
+
+        if scores:
+
             label = tk.Label(root, text=req_id)
             label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
-         
+
+
             for col, score in enumerate(scores, start=1):
                 progress = ttk.Progressbar(root, orient="horizontal", length=100, mode="determinate")
                 progress.grid(row=row, column=col, padx=10, pady=5, sticky="w")
                 progress['value'] = score * 10  # Max value 100, scale 0-10
 
+            overall_score = sum(scores) / len(scores) 
+            overall_score_label = tk.Label(root, text=f"{overall_score:.1f}", font=('Helvetica', 10))  # Score gösterimi
+            overall_score_label.grid(row=row, column=len(headers) - 1, padx=10, pady=5, sticky="w")
+        else:
+            label = tk.Label(root, text=req_id)
+            label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+
+            for col in range(1, len(headers) - 1): 
+                label = tk.Label(root, text="-")
+                label.grid(row=row, column=col, padx=10, pady=5, sticky="w")
+
+            # Overall Score
+            overall_score_label = tk.Label(root, text="N/A", font=('Helvetica', 10))
+            overall_score_label.grid(row=row, column=len(headers) - 1, padx=10, pady=5, sticky="w")
+
+        # Menu creation
+        menu_bar = tk.Menu(root)
+        file_menu = tk.Menu(menu_bar, tearoff=0)
+        file_menu.add_command(label="Exit", command=root.quit)
+        menu_bar.add_cascade(label="File", menu=file_menu)
+        root.config(menu=menu_bar)
+
+        headers = ["Requirement ID", "Consistency", "Clarity", "Testability", "Measurability", "Uniqueness", "Overall"]
+        for i, header in enumerate(headers):
+            tk.Label(root, text=header, font=('Helvetica', 10, 'bold')).grid(row=0, column=i, padx=10, pady=10, sticky="w")
+
+        for row, (req_id, scores) in enumerate(requirements_data, start=1):
+            tk.Label(root, text=req_id).grid(row=row, column=0, padx=10, pady=5, sticky="w")
+            for col, score in enumerate(scores, start=1):
+                progress = ttk.Progressbar(root, orient="horizontal", length=100, mode="determinate")
+                progress.grid(row=row, column=col, padx=10, pady=5, sticky="w")
+                progress['value'] = score * 10
+            overall_score = sum(scores) / len(scores)
+            tk.Label(root, text=f"{overall_score:.1f}", font=('Helvetica', 10)).grid(row=row, column=len(headers) - 1, padx=10, pady=5, sticky="w")
     root.mainloop()
 
 
