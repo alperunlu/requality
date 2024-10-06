@@ -15,7 +15,7 @@ def read_requirements(file_path):
     return [req.strip() for req in requirements]
 
 def gpt_evaluate_requirement(requirement):
-    prompt = f"Evaluate the following requirement based on the criteria: \n\nRequirement: {requirement}\n\nConsistency, Clarity, Testability, Measurability, and Uniqueness.\n\nProvide a score between 1 and 10 for each criteria. Just provide the score number, don't give the result out of ten."
+    prompt = f"Evaluate the following requirement based on the criteria: \n\nRequirement: {requirement}\n\nConsistency, Clarity, Testability, Measurability, and Uniqueness.\n\nProvide a score between 1 and 10 for each criteria. Just provide the score number."
    
     response = client.chat.completions.create(
         model="gpt-4",
